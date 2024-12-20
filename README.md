@@ -77,11 +77,7 @@ Setting Up the Development Environment
 
 ### Step-by-Step Setup
 
-1.  **Download and Install Arduino IDE**
-    
-    *   Download Arduino IDE
-    *   Install the IDE appropriate for your operating system.
-2.  **Install USB-to-Serial Drivers**
+1.  **Install USB-to-Serial Drivers**
     
     *   **Windows:**
         *   [CP210x USB to Serial Driver v11.1.0](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
@@ -89,7 +85,7 @@ Setting Up the Development Environment
         *   [CP210x USB to Serial Driver for Mac OS X](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
     *   **Installation:**
         *   Users must install the drivers **before** connecting the Spresense board to the PC.
-3.  **Install Python and Create Virtual Environment**
+2.  **Install Python and Create Virtual Environment**
     
     ```bash
     # Install Python (if not already installed)
@@ -100,13 +96,13 @@ Setting Up the Development Environment
     conda activate spresense_env
     ```
     
-4.  **Install Xcode Tools (macOS Only)** Open Terminal and run:
+3.  **Install Xcode Tools (macOS Only)** Open Terminal and run:
     
     ```bash
     xcode-select --install
     ```
     
-5.  **Install Required Tools**
+4.  **Install Required Tools**
     
     *   **Install Homebrew** (if not already installed):
         
@@ -127,7 +123,7 @@ Setting Up the Development Environment
         brew install flock
         ```
         
-6.  **Install Development Tools**
+5.  **Install Development Tools**
     
     ```bash
     curl -L https://raw.githubusercontent.com/sonydevworld/spresense/master/install-tools.sh > install-tools.sh
