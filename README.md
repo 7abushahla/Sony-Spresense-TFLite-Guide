@@ -1,7 +1,7 @@
 
 # Sony Spresense: Deploying TensorFlow Lite Models
 
-This GitHub repository provides a detailed guide for deploying TensorFlow Lite (TFLite) models on the Sony Spresense board. It includes information about setting up the environment, using the Spresense Arduino Package for TensorFlow, and optimizing for resource-constrained deployment. The guide is designed to be updated iteratively.
+This GitHub repository provides a detailed guide for deploying TensorFlow Lite (TFLite) models on the Sony Spresense board. It includes information about setting up the environment, using the Spresense Arduino Package for TensorFlow, and optimizing for resource-constrained deployment. This guide gives credit to **[@YoshinoTaro](https://github.com/YoshinoTaro)** for their Spresense Arduino Package for TensorFlow.
 
 ---
 
@@ -10,9 +10,11 @@ This GitHub repository provides a detailed guide for deploying TensorFlow Lite (
 ### 1. Understanding Sony Spresense Memory and Storage
 - **Flash Memory and RAM**:
   - Usable Flash Memory: ~6 MB
-  - Usable RAM: ~1 MB (subject to SDK and system configurations)
+  - Usable RAM: ~1 MB (subject to SDK and system configurations).
 - **External microSD Card**:
   - Usage requires the optional extension board, expanding storage capabilities for applications.
+
+Note: The Spresense Arduino Package for TensorFlow is based on **SDK v2.5.0**, and we specifically use this version as it ensures compatibility with the package. Later SDK versions are not supported with this package.
 
 ---
 
@@ -49,9 +51,15 @@ This GitHub repository provides a detailed guide for deploying TensorFlow Lite (
    ```
 
 3. **Set Up the Environment**:
+   Add the following lines to your `~/.bash_profile` (or equivalent for your shell):
+   ```bash
+   source ~/spresenseenv/setup
+   export SPRESENSE_SDK=/Users/<your-username>/spresense
+   export SPRESENSE_HOME=/Users/<your-username>/myapps
+   ```
+   Then activate the changes:
    ```bash
    source ~/.bash_profile
-   source ~/spresenseenv/setup
    ```
 
 4. **Clone Spresense SDK (v2.5.0)**:
@@ -80,6 +88,10 @@ This GitHub repository provides a detailed guide for deploying TensorFlow Lite (
    =======================================
       SDK_VERSION = SDK2.5.0
     NUTTX_VERSION = 10.2.0
+   SPRESENSE_SDK = /Users/<your-username>/spresense
+   SPRESENSE_HOME = /Users/<your-username>/myapps
+      GCC_VERSION = arm-none-eabi-gcc (GNU Arm Embedded Toolchain 10.3-2021.10) 10.3.1 20210824 (release)
+             HOST = Darwin x86_64
    =======================================
    ```
 
