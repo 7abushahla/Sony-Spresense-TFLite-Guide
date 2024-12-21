@@ -52,14 +52,31 @@ Hardware Overview
 
 ### Sony Spresense Board
 
-*   **Processor:** ARM Cortex-M4F
-*   **Flash Memory:** ~6 MB (usable)
-*   **RAM:** ~1 MB (subject to SDK and system configurations)
+*   **Processor:** 6-Core ARM Cortex-M4F
+*   **Flash Memory:** 8 MB
+*   **SRAM:** 1.5 MB
 *   **Expansion:** Supports external microSD cards via the optional extension board
 
-Understanding the hardware specifications is crucial for optimizing model deployment, especially regarding memory usage. The Spresense board's flash memory and RAM limitations will dictate the size and complexity of the models you can deploy.
+Memory Constraints and Usage
+-----------------
+### SRAM (1.5 MB)
 
-**External Micro SD Card:** If you have the extension board, you can leverage an external microSD card to expand storage capabilities, allowing for larger models and datasets.
+* Used for runtime data, including variables, stack, heap, and dynamically allocated memory.
+* During inference, weights and activations are stored in SRAM temporarily.
+* Limited capacity requires careful optimization of model size to prevent memory overflow.
+
+### Flash Memory (8 MB)
+
+* Used for storing the bootloader, firmware, applications, and other persistent data.
+* Model weights are stored in flash memory before being loaded into SRAM for inference.
+* Effective utilization of this space is crucial for deploying larger models within the board's constraints.
+
+### External Micro SD Card
+
+* Supports storage of auxiliary data, such as images, CSV files, or other non-model-related content.
+* Cannot be used to store model weights or binaries for inference.
+
+Understanding the hardware specifications is crucial for optimizing model deployment, especially regarding memory usage. The Spresense board's flash memory and RAM limitations will dictate the size and complexity of the models you can deploy.
 
 **SDK Compatibility:** The Spresense Arduino Package for TensorFlow is based on **SDK v2.5.0**, ensuring compatibility. Later SDK versions are not supported with this package.
 
@@ -77,14 +94,12 @@ Setting Up the Development Environment
 
 ### Step-by-Step Setup
 
-1.  **Install USB-to-Serial Drivers**
-    
-    *   **Windows:**
-        *   [CP210x USB to Serial Driver v11.1.0](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
-    *   **macOS:**
-        *   [CP210x USB to Serial Driver for Mac OS X](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
-    *   **Installation:**
-        *   Users must install the drivers **before** connecting the Spresense board to the PC.
+1. **Install USB-to-Serial Drivers**
+   - **macOS**:
+     - [CP210x USB to Serial Driver for Mac OS X](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers)
+   - **Installation**:
+     - Users must install the drivers **before** connecting the Spresense board to the PC.
+       
 2.  **Install Python and Create Virtual Environment**
     
     ```bash
@@ -250,72 +265,101 @@ source ~/.bash_profile
     *   Refer to the [Spresense SDK Documentation](https://developer.sony.com/spresense/development-guides/sdk_set_up_en.html#_spr_create_approot) for setting the application root, typically at `/home/user/myapps`.
  
 
-
 ### Configure the SDK
 
-1.  **Set Initial Configuration:**
-    
+1. **Set Initial Configuration:**
+
     ```bash
     cd spresense/sdk
     tools/config.py examples/hello
     ```
-    
-2.  **Handling Bootloader Warnings:** If you encounter a message like:
-    
+
+2. **Handling Bootloader Warnings:**  
+   If you encounter a message like:
+
     ```vbnet
     WARNING: New loader vX.Y.Z is required, please download and install.
     ```
-    
-    *   **Solution:** Flash the new bootloader.
-        
-        ```bash
-        ./tools/flash.sh -e /path/to/spresense-binaries-v2.4.0.zip
-        ./tools/flash.sh -l /path/to/spresense/firmware/spresense -c /dev/cu.SLAB_USBtoUART
-        ```
-        
+
+   - **Solution:** Flash the new bootloader.
+   
+    ```bash
+    ./tools/flash.sh -e /path/to/spresense-binaries-v2.4.0.zip
+    ./tools/flash.sh -l /path/to/spresense/firmware/spresense -c /dev/cu.SLAB_USBtoUART
+    ```
+
+3. **Build the Example Image:**
+
+    ```bash
+    make
+    ```
+
+   After running the `make` command, a `nuttx.spk` file will be created in the `sdk` folder. This file is the final build artifact that can be flashed onto the Spresense board.
+
+4. **Flash the Example to the Board:**
+
+    Use the `tools/flash.sh` script to flash the `nuttx.spk` file onto the board.
+
+    ```bash
+    tools/flash.sh -c /dev/cu.SLAB_USBtoUART nuttx.spk
+    ```
+
+   *Note:* Replace `/dev/cu.SLAB_USBtoUART` with your board's serial port if it differs.
+
+5. **Reboot and Verify:**
+
+   After flashing, the Spresense board will reboot automatically.
+
+---
 
 ### Verify Serial Connection and NuttShell
 
-1.  **Identify the Serial Port:** The serial port for Spresense on macOS is typically `/dev/cu.SLAB_USBtoUART`. To confirm:
-    
+1. **Identify the Serial Port:**  
+   On macOS, the serial port for Spresense is typically `/dev/cu.SLAB_USBtoUART`. To confirm the correct port, run:
+
     ```bash
     ls /dev/{tty,cu}.*
     ```
-    
-    Look for `/dev/cu.SLAB_USBtoUART` in the output.
-    
-2.  **Install `screen` (if not already installed):**
-    
+
+   Look for `/dev/cu.SLAB_USBtoUART` in the output.
+
+2. **Install `screen` (if not already installed):**
+
     ```bash
     brew install screen
     ```
-    
-3.  **Connect to the Serial Port:**
-    
+
+3. **Connect to the Serial Port:**
+
+    Open a serial monitor with a baud rate of 115200:
+
     ```bash
     screen /dev/cu.SLAB_USBtoUART 115200
     ```
-    
-    This command opens a serial monitor with a baud rate of 115200.
-    
-4.  **Run Hello World Example:** At the `nsh>` prompt, type:
-    
+
+4. **Run the Hello World Example:**
+
+    At the `nsh>` prompt, type:
+
     ```bash
     nsh> hello
     ```
-    
+
     You should see:
-    
-    ```
+
+    ```plaintext
     Hello, World!!
     ```
-    
-5.  **Exiting `screen`:**
-    
-    *   Press `Ctrl + A`, then `K` to kill the session.
-    *   Confirm by typing `Y`.
 
-Once you see the `Hello, World!!` output, your environment is correctly set up.
+5. **Exit `screen`:**
+
+   - Press `Ctrl + A`, then `K` to kill the session.
+   - Confirm by typing `Y`.
+
+---
+
+Once you see the `Hello, World!!` output, your environment is correctly set up, and the SDK configuration is complete.
+
 
 * * *
 
@@ -545,114 +589,110 @@ with open("model.h", "w") as f:
 ### Example Sketch Code
 
 ```cpp
+// TensorFlow Lite Micro includes
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/system_setup.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+
 #include "model.h"  // Your model file after conversion
 
-#define TEST_FILE "0003.bmp"
-
-tflite::ErrorReporter* error_reporter = nullptr;
-const tflite::Model* model = nullptr;
-tflite::MicroInterpreter* interpreter = nullptr;
-TfLiteTensor* input = nullptr;
-TfLiteTensor* output = nullptr;
-int inference_count = 0;
-
-/* Adjust kTensorArenaSize based on your model's requirements */
-constexpr int kTensorArenaSize = 30000;
-uint8_t tensor_arena[kTensorArenaSize];
-
-#include <Flash.h>
-#include <BmpImage.h>
-BmpImage bmp;
-
-void setup() {
-  Serial.begin(115200);
+// Globals for TensorFlow Lite Micro
+namespace {
+  tflite::ErrorReporter* error_reporter = nullptr;
+  const tflite::Model* model = nullptr;
+  tflite::MicroInterpreter* interpreter = nullptr;
+  TfLiteTensor* input = nullptr;
+  TfLiteTensor* output = nullptr;
+  int inference_count = 0;
   
-  // Initialize TensorFlow Lite
-  static tflite::AllOpsResolver resolver;
+  // Define the size of the tensor arena (adjust as needed)
+  constexpr int kTensorArenaSize = 300 * 1024;
+  uint8_t tensor_arena[kTensorArenaSize];
+} 
+
+// Function to set up the TensorFlow Lite Micro model
+void setupModel() {
+  // Initialize TensorFlow Lite Micro target
+  tflite::InitializeTarget();
+
+  // Initialize the tensor arena to zero
+  memset(tensor_arena, 0, sizeof(tensor_arena));
+
+  // Set up the error reporter
   static tflite::MicroErrorReporter micro_error_reporter;
   error_reporter = &micro_error_reporter;
 
+  // Load the TensorFlow Lite model
   model = tflite::GetModel(model_tflite);
   if (model->version() != TFLITE_SCHEMA_VERSION) {
-    Serial.println("Model provided is schema version not supported");
-    return;
+    Serial.println("Model schema version mismatch.");
+    while (1); // Halt if version mismatch
   }
 
+  // Create an operator resolver
+  static tflite::AllOpsResolver resolver;
+
+  // Create the interpreter
   static tflite::MicroInterpreter static_interpreter(
       model, resolver, tensor_arena, kTensorArenaSize, error_reporter);
   interpreter = &static_interpreter;
 
-  // Allocate tensors
-  TfLiteStatus allocate_status = interpreter->AllocateTensors();
-  if (allocate_status != kTfLiteOk) {
-    Serial.println("AllocateTensors() failed");
-    return;
-  } else {
-    Serial.println("AllocateTensors() Success");
+  // Allocate memory for the tensors
+  if (interpreter->AllocateTensors() != kTfLiteOk) {
+    Serial.println("AllocateTensors() failed.");
+    while (1); // Halt if allocation fails
   }
 
-  size_t used_size = interpreter->arena_used_bytes();
-  Serial.println("Arena used bytes: " + String(used_size));
-
+  // Obtain pointers to the model's input and output tensors
   input = interpreter->input(0);
   output = interpreter->output(0);
 
-  // Load and preprocess the test image
-  File myFile = Flash.open(TEST_FILE);
-  if (!myFile) {
-    Serial.println(TEST_FILE " not found");
-    return;
+  // Get information about the memory area to use for the model's input
+  Serial.println("Model input:");
+  Serial.println("Number of dimensions: " + String(input->dims->size));
+  for (int n = 0; n < input->dims->size; ++n)
+  {
+    Serial.println("dims->data[" + String(n) + "]: " + String(input->dims->data[n]));
   }
+  Serial.print("Input type: ");
+  Serial.println(input->type);
 
-  bmp.begin(myFile);
-
-  // Verify image format
-  if (bmp.getPixFormat() != BmpImage::BMP_IMAGE_GRAY8) {
-    Serial.println("Unsupported image format");
-    return;
+  Serial.println("\nModel output:");
+  Serial.println("dims->size: " + String(output->dims->size));
+  for (int n = 0; n < output->dims->size; ++n)
+  {
+    Serial.println("dims->data[" + String(n) + "]: " + String(output->dims->data[n]));
   }
+  Serial.print("Output type: ");
+  Serial.println(output->type);
 
-  // Ensure image dimensions
-  int width = bmp.getWidth();
-  int height = bmp.getHeight();
-  Serial.println("Width: " + String(width));
-  Serial.println("Height: " + String(height));
+  Serial.println("Completed TensorFlow setup");
+  Serial.println();
+}
 
-  uint8_t* img = bmp.getImgBuff();
+void setup() {
+  // Initialize serial communication
+  Serial.begin(115200);
+  while (!Serial) { /* Wait for Serial to initialize */ }
 
-  // Normalize the image data
-  for (int i = 0; i < width * height; ++i) {
-    input->data.f[i] = (float)(img[i] / 255.0);
-  }
+  // Set up the TensorFlow Lite Micro model
+  setupModel();
 }
 
 void loop() {
-  Serial.println("Do inference");
-  TfLiteStatus invoke_status = interpreter->Invoke();
-  if (invoke_status != kTfLiteOk) {
-    Serial.println("Invoke failed");
-    return;
-  }
+  // Placeholder for your main code
+  // You can add inference calls or other logic here
 
-  // Display the results
-  for (int n = 0; n < 10; ++n) {
-    float value = output->data.f[n];
-    Serial.println("[" + String(n) + "] " + String(value));
-  }
-
-  delay(1000); // Delay between inferences
+  // For example, a simple delay to prevent the loop from running too fast
+  delay(1000);
 }
 ```
 
-**Notes:**
+### Notes
 
 *   **Memory Allocation:** Adjust `kTensorArenaSize` based on your model's memory requirements. Monitor memory usage with `interpreter->arena_used_bytes()`.
-*   **Image Format:** Ensure that the test image is in `GRAY8` format with dimensions matching your model's input.
 
 * * *
 
@@ -698,17 +738,40 @@ Refer to the [Spresense Arduino Developer Guide](https://developer.sony.com/spre
     *   You should see inference outputs similar to:
         
         ```csharp
-        AllocateTensors() Success
-        Arena used bytes: 15000
-        Width: 28
-        Height: 28
-        Do inference
-        [0] 0.123
-        [1] 0.456
-        [2] 0.789
+         AllocateTensors() Success
+         Arena used bytes: 15000
+         Model input:
+         Number of dimensions: 4
+         dims->data[0]: 1
+         dims->data[1]: 28
+         dims->data[2]: 28
+         dims->data[3]: 1
+         Input type: 1
+         
+         Model output:
+         Number of dimensions: 2
+         dims->data[0]: 1
+         dims->data[1]: 10
+         Output type: 1
+         
+         Completed TensorFlow setup
         ...
         ```
-        
+
+       *  The `input->type` and `output->type` fields represent the data types of the tensors used by the TensorFlow Lite model. Below is a list of the possible data types and their corresponding integer values:
+          
+             *   `KTfLiteNoType` (0): Undefined or unspecified type.
+             *   `kTfLiteFloat32` (1): 32-bit floating-point numbers.
+             *   `kTfLiteInt32` (2): 32-bit signed integers.
+             *   `kTfLiteUInt8` (3): 8-bit unsigned integers.
+             *   `KTfLiteInt64` (4): 64-bit signed integers.
+             *   `KTfLiteString` (5): String data type.
+             *   `KTfLiteBool` (6): Boolean values (`true` or `false`).
+             *   `KTfLiteInt16` (7): 16-bit signed integers.
+             *   `KTfLiteComplex64` (8): Complex numbers with 64-bit precision.
+             *   `KTfLiteInt8` (9): 8-bit signed integers.
+             *   `kTfLiteFloat16` (10): 16-bit floating-point numbers.
+
 *   **Performance Metrics:**
     
     *   Refer to repository files for scripts that run multiple inferences (e.g., 1000 inferences) to calculate average inference time and frames per second (FPS).
