@@ -43,7 +43,7 @@ Table of Contents
 Introduction
 ------------
 
-This repository serves as a **Getting Started Guide** for deploying TensorFlow Lite models on the Sony Spresense board. The primary focus is on deployment, but it also covers setting up the user's computer and ensuring proper usage of the board.
+This repository serves as a **Getting Started Guide** for deploying TensorFlow Lite models on the Sony Spresense board. The primary focus is on deployment, but it also covers setting up the user's computer and ensuring proper usage of the board. The guide leverages [TFLite for Microcontrollers (TFLite Micro)](https://ai.google.dev/edge/litert/microcontrollers/get_started) and utilizes C++ to run inference on the device using the TFLite Micro library and process the results.
 
 * * *
 
@@ -587,6 +587,7 @@ with open("model.h", "w") as f:
     
 
 ### Example Sketch Code
+This example sketch is based on the [TensorFlow Lite for Microcontrollers Get Started](https://ai.google.dev/edge/litert/microcontrollers/get_started) guide.
 
 ```cpp
 // TensorFlow Lite Micro includes
@@ -808,7 +809,7 @@ References
 *   [Spresense SDK Getting Started Guide (CLI)](https://developer.sony.com/spresense/development-guides/sdk_set_up_en.html)
 *   [Spresense Arduino Developer Guide](https://developer.sony.com/spresense/development-guides/arduino_developer_guide_en.html)
 *   [YoshinoTaro's Spresense Arduino TensorFlow Repository](https://github.com/YoshinoTaro/spresense-arduino-tensorflow)
-*   [TensorFlow Lite for Microcontrollers](https://github.com/tensorflow/tflite-micro)
+*   [TensorFlow Lite for Microcontrollers](https://ai.google.dev/edge/litert/microcontrollers/overview)
 *   [CMSIS\-NN Library](https://github.com/ARM-software/CMSIS-NN)
 *   [Post\-Training Integer Quantization](https://ai.google.dev/edge/litert/models/post_training_integer_quant#convert_to_a_litert_model)
 *   [Download Spresense Firmware v2.4.0](https://developer.sony.com/file/download/download-spresense-firmware-v2-4-000)
