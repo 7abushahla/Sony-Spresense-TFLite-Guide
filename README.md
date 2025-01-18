@@ -816,4 +816,22 @@ References
 
 * * *
 
+Citation and Reaching Out
+------------
+
+### Citation
+If you use this repository or its contents in your work, please cite this paper:
+```bibtex
+
+```
+
+### Contact
+If you have any questions, please feel free to reach out to me through email ([b00090279@alumni.aus.edu](mailto:b00090279@alumni.aus.edu)) or by connecting with me on [LinkedIn](https://www.linkedin.com/in/hamza-abushahla/).
+
+* * *
+
+
+
 Thank you for using this guide! I hope it helps you successfully deploy your TensorFlow Lite models on the Sony Spresense board.
+
+
