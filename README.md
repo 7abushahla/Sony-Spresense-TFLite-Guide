@@ -37,6 +37,7 @@ Table of Contents
     *   [Monitor Serial Output](#3-monitor-serial-output)
 8.  [Notes on Optimization and Memory Usage](#notes-on-optimization-and-memory-usage)
 9.  [References](#references)
+10. [Citation and Reaching Out](#citation-and-reaching-out)
 
 * * *
 
