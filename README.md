@@ -824,12 +824,12 @@ Citation and Reaching Out
 If you use this repository or its contents in your work, please cite this paper:
 ```bibtex
 @INPROCEEDINGS{Abushahla2025,
-  author={Abushahla, Hamza A. and Elmugamer, Lodan and Gharaibeh, Rana and Sajun, Ali Reza and Zualkernan, Imran A.},
-  booktitle={2025 IEEE Global Engineering Education Conference (EDUCON)},
-  title={Real-Time Student Engagement Monitoring on Edge Devices: Deep Learning Meets Efficiency and Privacy},
-  year={2025},
-  pages={},
-  doi={}
+  author    = {Abushahla, Hamza A. and Gharaibeh, Rana and Elmugamer, Lodan and Reza Sajun, Ali and Zualkernan, Imran A.},
+  title     = {Real-Time Student Engagement Monitoring on Edge Devices: Deep Learning Meets Efficiency and Privacy},
+  booktitle = {Proceedings of the 2025 IEEE Global Engineering Education Conference (EDUCON)},
+  year      = {2025},
+  pages     = {1--9},
+  doi       = {10.1109/EDUCON62633.2025.11016436}
 }
 ```
 
